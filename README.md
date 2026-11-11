@@ -6,8 +6,11 @@ establish who is asking.
 - Identity (advertised in the `UCP-Agent` header): <https://agent.attainai.ai/.well-known/ucp>
 - Release-pinned copies, for audit and for a client that pins: `ucp/agent/<release>.json`
 
-Served by Cloudflare Pages, behind the custom domain `agent.attainai.ai`, with
-header rules in `_headers`. **GitHub Pages cannot host this document** — measured,
+Served by **Cloudflare Pages** (project `ucp-agent-profile`), custom domain
+`agent.attainai.ai`, header rules in `_headers`. GitHub Pages is deliberately
+disabled: it was the first origin, it could not set the headers a merchant
+enforces, and one origin is one thing to reason about. The `CNAME` file that
+GitHub Pages needs was removed with it. **GitHub Pages cannot host this document** — measured,
 not assumed: it has no per-file header control, so an extensionless
 `/.well-known/ucp` is served as `application/octet-stream` with `max-age=600` and
 no `public`, and Shopify's fetcher rejects both in turn with `-32001
