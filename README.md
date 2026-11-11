@@ -6,9 +6,19 @@ establish who is asking.
 - Identity (advertised in the `UCP-Agent` header): <https://agent.attainai.ai/.well-known/ucp>
 - Release-pinned copies, for audit and for a client that pins: `ucp/agent/<release>.json`
 
-Served by GitHub Pages behind the custom domain `agent.attainai.ai`, which is a
-`CNAME` to `comet528.github.io` with Cloudflare proxying **off**, so that GitHub
-can issue the certificate.
+Served by Cloudflare Pages, behind the custom domain `agent.attainai.ai`, with
+header rules in `_headers`. **GitHub Pages cannot host this document** — measured,
+not assumed: it has no per-file header control, so an extensionless
+`/.well-known/ucp` is served as `application/octet-stream` with `max-age=600` and
+no `public`, and Shopify's fetcher rejects both in turn with `-32001
+profile_malformed` ("Invalid content type", then "Invalid cache control").
+Shopify's own reference profile sends `application/json` and
+`public, max-age=3600, stale-while-revalidate=7200`.
+
+| Gate a merchant actually enforces | GitHub Pages | Cloudflare Pages with `_headers` |
+|---|---|---|
+| `content-type: application/json` on an extensionless path | `application/octet-stream` — refused | set by `_headers` |
+| `Cache-Control` containing `public` and `max-age >= 60` | `max-age=600`, no `public` — refused | set by `_headers` |
 
 ## Why `/.well-known/ucp` and not a versioned path
 

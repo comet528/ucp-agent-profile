@@ -1,0 +1,23 @@
+# Header rules for Cloudflare Pages.
+#
+# GitHub Pages cannot carry these: it has no per-file header control, so an
+# extensionless `/.well-known/ucp` is served as application/octet-stream and
+# every profile gets `max-age=600` with no `public`. Shopify's fetcher rejects
+# both, in that order, with -32001 profile_malformed:
+#
+#   content-type octet-stream          -> "Invalid content type"
+#   cache-control max-age=600 (no public) -> "Invalid cache control"
+#
+# Measured 11 November 2026 against weareallbirds.myshopify.com, using this
+# domain as the advertised agent profile. Shopify's own reference profile sends
+# `application/json` and `public, max-age=3600, stale-while-revalidate=7200`.
+
+/.well-known/ucp
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=600
+  Access-Control-Allow-Origin: *
+
+/ucp/agent/*
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=600
+  Access-Control-Allow-Origin: *

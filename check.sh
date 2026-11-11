@@ -41,6 +41,14 @@ if [ -n "${age:-}" ] && [ "$age" -ge 60 ]; then
 else
   bad "cache max-age >= 60" "got ${cc:-no cache-control}"
 fi
+# `public` is not decoration: Shopify's fetcher rejects a profile whose
+# Cache-Control lacks it, with -32001 profile_malformed "Invalid cache control".
+# Measured on GitHub Pages, whose `max-age=600` without `public` was refused.
+if printf '%s' "$cc" | grep -q 'public'; then
+  say "cache-control public" "ok"
+else
+  bad "cache-control public" "got ${cc:-none} — a merchant rejects this as invalid cache control"
+fi
 
 if grep -qiE '^(etag|last-modified):' /tmp/agent-profile.head; then
   say "validator present" "ok"
